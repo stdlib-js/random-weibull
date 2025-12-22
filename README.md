@@ -1,0 +1,489 @@
+<!--
+
+@license Apache-2.0
+
+Copyright (c) 2025 The Stdlib Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+
+
+<details>
+  <summary>
+    About stdlib...
+  </summary>
+  <p>We believe in a future in which the web is a preferred environment for numerical computation. To help realize this future, we've built stdlib. stdlib is a standard library, with an emphasis on numerical and scientific computation, written in JavaScript (and C) for execution in browsers and in Node.js.</p>
+  <p>The library is fully decomposable, being architected in such a way that you can swap out and mix and match APIs and functionality to cater to your exact preferences and use cases.</p>
+  <p>When you use stdlib, you can be absolutely certain that you are using the most thorough, rigorous, well-written, studied, documented, tested, measured, and high-quality code out there.</p>
+  <p>To join us in bringing numerical computing to the web, get started by checking us out on <a href="https://github.com/stdlib-js/stdlib">GitHub</a>, and please consider <a href="https://opencollective.com/stdlib">financially supporting stdlib</a>. We greatly appreciate your continued support!</p>
+</details>
+
+# Weibull Random Numbers
+
+[![NPM version][npm-image]][npm-url] [![Build Status][test-image]][test-url] [![Coverage Status][coverage-image]][coverage-url] <!-- [![dependencies][dependencies-image]][dependencies-url] -->
+
+> Generate pseudorandom numbers drawn from a [Weibull][@stdlib/random/base/weibull] distribution.
+
+<section class="installation">
+
+## Installation
+
+```bash
+npm install @stdlib/random-weibull
+```
+
+Alternatively,
+
+-   To load the package in a website via a `script` tag without installation and bundlers, use the [ES Module][es-module] available on the [`esm`][esm-url] branch (see [README][esm-readme]).
+-   If you are using Deno, visit the [`deno`][deno-url] branch (see [README][deno-readme] for usage intructions).
+-   For use in Observable, or in browser/node environments, use the [Universal Module Definition (UMD)][umd] build available on the [`umd`][umd-url] branch (see [README][umd-readme]).
+
+The [branches.md][branches-url] file summarizes the available branches and displays a diagram illustrating their relationships.
+
+To view installation and usage instructions specific to each branch build, be sure to explicitly navigate to the respective README files on each branch, as linked to above.
+
+</section>
+
+<section class="usage">
+
+## Usage
+
+```javascript
+var weibull = require( '@stdlib/random-weibull' );
+```
+
+#### weibull( shape, k, lambda\[, options] )
+
+Returns an [ndarray][@stdlib/ndarray/ctor] containing pseudorandom numbers drawn from a [Weibull][@stdlib/random/base/weibull] distribution.
+
+```javascript
+var arr = weibull( [ 3, 3 ], 2.0, 5.0 );
+// returns <ndarray>
+```
+
+The function has the following parameters:
+
+-   **shape**: output shape.
+-   **k**: shape parameter. May be either a scalar or an [ndarray][@stdlib/ndarray/ctor]. When providing an [ndarray][@stdlib/ndarray/ctor], the [ndarray][@stdlib/ndarray/ctor] must be [broadcast compatible][@stdlib/ndarray/base/broadcast-shapes] with the specified output shape.
+-   **lambda**: scale parameter. May be either a scalar or an [ndarray][@stdlib/ndarray/ctor]. When providing an [ndarray][@stdlib/ndarray/ctor], the [ndarray][@stdlib/ndarray/ctor] must be [broadcast compatible][@stdlib/ndarray/base/broadcast-shapes] with the specified output shape.
+-   **options**: function options.
+
+When provided scalar distribution parameters, every element in the output [ndarray][@stdlib/ndarray/ctor] is drawn from the same distribution. To generate pseudorandom numbers drawn from different distributions, provide distribution parameter arguments as [ndarrays][@stdlib/ndarray/ctor]. The following example demonstrates broadcasting an [ndarray][@stdlib/ndarray/ctor] containing distribution parameters to generate sub-matrices drawn from different distributions.
+
+```javascript
+var getShape = require( '@stdlib/ndarray-shape' );
+var array = require( '@stdlib/ndarray-array' );
+
+var k = array( [ [ [ 2.0 ] ], [ [ 10.0 ] ] ] );
+// returns <ndarray>
+
+var lambda = array( [ [ [ 5.0 ] ], [ [ 20.0 ] ] ] );
+// returns <ndarray>
+
+var shape = getShape( k );
+// returns [ 2, 1, 1 ]
+
+var arr = weibull( [ 2, 3, 3 ], k, lambda );
+// returns <ndarray>
+```
+
+If provided an empty shape, the function returns a zero-dimensional [ndarray][@stdlib/ndarray/ctor].
+
+```javascript
+var getShape = require( '@stdlib/ndarray-shape' );
+
+var arr = weibull( [], 2.0, 5.0 );
+// returns <ndarray>
+
+var shape = getShape( arr );
+// returns []
+
+var v = arr.get();
+// returns <number>
+```
+
+The function accepts the following options:
+
+-   **dtype**: output ndarray data type. Must be a real-valued floating-point or "generic" [data type][@stdlib/ndarray/dtypes].
+-   **order**: ndarray order (i.e., memory layout), which is either `row-major` (C-style) or `column-major` (Fortran-style). Default: `'row-major'`.
+-   **mode**: specifies how to handle indices which exceed ndarray dimensions. For a list of supported modes, see [`ndarray`][@stdlib/ndarray/ctor]. Default: `'throw'`.
+-   **submode**: a mode array which specifies for each dimension how to handle subscripts which exceed ndarray dimensions. If provided fewer modes than dimensions, an [ndarray][@stdlib/ndarray/ctor] instance recycles modes using modulo arithmetic. Default: `[ options.mode ]`.
+-   **readonly**: boolean indicating whether an ndarray should be **read-only**. Default: `false`.
+
+By default, the function returns an [ndarray][@stdlib/ndarray/ctor] having a [data type][@stdlib/ndarray/dtypes] determined by the function's output data type [policy][@stdlib/ndarray/output-dtype-policies]. To override the default behavior, set the `dtype` option.
+
+```javascript
+var getDType = require( '@stdlib/ndarray-dtype' );
+
+var opts = {
+    'dtype': 'generic'
+};
+
+var arr = weibull( [ 3, 3 ], 2.0, 5.0, opts );
+// returns <ndarray>
+
+var dt = String( getDType( arr ) );
+// returns 'generic'
+```
+
+#### weibull.assign( k, lambda, out )
+
+Fills an [ndarray][@stdlib/ndarray/ctor] with pseudorandom numbers drawn from a [Weibull][@stdlib/random/base/weibull] distribution.
+
+```javascript
+var zeros = require( '@stdlib/ndarray-zeros' );
+
+var out = zeros( [ 3, 3 ] );
+// returns <ndarray>
+
+var v = weibull.assign( 2.0, 5.0, out );
+// returns <ndarray>
+
+var bool = ( v === out );
+// returns true
+```
+
+The method has the following parameters:
+
+-   **k**: shape parameter. May be either a scalar or an [ndarray][@stdlib/ndarray/ctor]. When providing an [ndarray][@stdlib/ndarray/ctor], the [ndarray][@stdlib/ndarray/ctor] must be [broadcast compatible][@stdlib/ndarray/base/broadcast-shapes] with the output [ndarray][@stdlib/ndarray/ctor].
+-   **lambda**: scale parameter. May be either a scalar or an [ndarray][@stdlib/ndarray/ctor]. When providing an [ndarray][@stdlib/ndarray/ctor], the [ndarray][@stdlib/ndarray/ctor] must be [broadcast compatible][@stdlib/ndarray/base/broadcast-shapes] with the output [ndarray][@stdlib/ndarray/ctor].
+-   **out**: output [ndarray][@stdlib/ndarray/ctor].
+
+#### weibull.factory( \[options] )
+
+Returns a function for generating pseudorandom numbers drawn from a [Weibull][@stdlib/random/base/weibull] distribution.
+
+```javascript
+var getShape = require( '@stdlib/ndarray-shape' );
+
+var random = weibull.factory();
+
+var out = random( [ 3, 3 ], 2.0, 5.0 );
+// returns <ndarray>
+
+var sh = getShape( out );
+// returns [ 3, 3 ]
+```
+
+The method accepts the following options:
+
+-   **prng**: pseudorandom number generator for generating uniformly distributed pseudorandom numbers on the interval `[0,1)`. If provided, the function **ignores** both the `state` and `seed` options. In order to seed the underlying pseudorandom number generator, one must seed the provided `prng` (assuming the provided `prng` is seedable).
+-   **seed**: pseudorandom number generator seed.
+-   **state**: a [`Uint32Array`][@stdlib/array/uint32] containing pseudorandom number generator state. If provided, the function ignores the `seed` option.
+-   **copy**: boolean indicating whether to copy a provided pseudorandom number generator state. Setting this option to `false` allows sharing state between two or more pseudorandom number generators. Setting this option to `true` ensures that an underlying generator has exclusive control over its internal state. Default: `true`.
+
+To use a custom PRNG as the underlying source of uniformly distributed pseudorandom numbers, set the `prng` option.
+
+```javascript
+var minstd = require( '@stdlib/random-base-minstd' );
+
+var opts = {
+    'prng': minstd.normalized
+};
+var random = weibull.factory( opts );
+
+var out = random( [ 3, 3 ], 2.0, 5.0 );
+// returns <ndarray>
+```
+
+To seed the underlying pseudorandom number generator, set the `seed` option.
+
+```javascript
+var opts = {
+    'seed': 12345
+};
+var random = weibull.factory( opts );
+
+var out = random( [ 3, 3 ], 2.0, 5.0 );
+// returns <ndarray>
+```
+
+The function returned by the `factory` method has the same interface and accepts the same options as the `weibull` function above.
+
+#### weibull.PRNG
+
+The underlying pseudorandom number generator.
+
+```javascript
+var prng = weibull.PRNG;
+// returns <Function>
+```
+
+#### weibull.seed
+
+The value used to seed the underlying pseudorandom number generator.
+
+```javascript
+var seed = weibull.seed;
+// returns <Uint32Array>
+```
+
+If the `factory` method is provided a PRNG for uniformly distributed numbers, the associated property value on the returned function is `null`.
+
+```javascript
+var minstd = require( '@stdlib/random-base-minstd-shuffle' ).normalized;
+
+var random = weibull.factory({
+    'prng': minstd
+});
+
+var seed = random.seed;
+// returns null
+```
+
+#### weibull.seedLength
+
+Length of underlying pseudorandom number generator seed.
+
+```javascript
+var len = weibull.seedLength;
+// returns <number>
+```
+
+If the `factory` method is provided a PRNG for uniformly distributed numbers, the associated property value on the returned function is `null`.
+
+```javascript
+var minstd = require( '@stdlib/random-base-minstd-shuffle' ).normalized;
+
+var random = weibull.factory({
+    'prng': minstd
+});
+
+var len = random.seedLength;
+// returns null
+```
+
+#### weibull.state
+
+Writable property for getting and setting the underlying pseudorandom number generator state.
+
+```javascript
+var state = weibull.state;
+// returns <Uint32Array>
+```
+
+If the `factory` method is provided a PRNG for uniformly distributed numbers, the associated property value on the returned function is `null`.
+
+```javascript
+var minstd = require( '@stdlib/random-base-minstd-shuffle' ).normalized;
+
+var random = weibull.factory({
+    'prng': minstd
+});
+
+var state = random.state;
+// returns null
+```
+
+#### weibull.stateLength
+
+Length of underlying pseudorandom number generator state.
+
+```javascript
+var len = weibull.stateLength;
+// returns <number>
+```
+
+If the `factory` method is provided a PRNG for uniformly distributed numbers, the associated property value on the returned function is `null`.
+
+```javascript
+var minstd = require( '@stdlib/random-base-minstd-shuffle' ).normalized;
+
+var random = weibull.factory({
+    'prng': minstd
+});
+
+var len = random.stateLength;
+// returns null
+```
+
+#### weibull.byteLength
+
+Size (in bytes) of underlying pseudorandom number generator state.
+
+```javascript
+var sz = weibull.byteLength;
+// returns <number>
+```
+
+If the `factory` method is provided a PRNG for uniformly distributed numbers, the associated property value on the returned function is `null`.
+
+```javascript
+var minstd = require( '@stdlib/random-base-minstd-shuffle' ).normalized;
+
+var random = weibull.factory({
+    'prng': minstd
+});
+
+var sz = random.byteLength;
+// returns null
+```
+
+</section>
+
+<!-- /.usage -->
+
+<section class="notes">
+
+## Notes
+
+-   If PRNG state is "shared" (meaning a state array was provided during function creation and **not** copied) and one sets the underlying generator state to a state array having a different length, the function returned by the `factory` method does **not** update the existing shared state and, instead, points to the newly provided state array. In order to synchronize the output of the underlying generator according to the new shared state array, the state array for **each** relevant creation function and/or PRNG must be **explicitly** set.
+-   If PRNG state is "shared" and one sets the underlying generator state to a state array of the same length, the PRNG state is updated (along with the state of all other creation functions and/or PRNGs sharing the PRNG's state array).
+-   The output data type [policy][@stdlib/ndarray/output-dtype-policies] only applies to the main function and specifies that, by default, the function must return an [ndarray][@stdlib/ndarray/ctor] having a real-valued floating-point or "generic" [data type][@stdlib/ndarray/dtypes]. For the `assign` method, the output [ndarray][@stdlib/ndarray/ctor] is allowed to have any supported output [data type][@stdlib/ndarray/dtypes].
+
+</section>
+
+<!-- /.notes -->
+
+<section class="examples">
+
+## Examples
+
+<!-- eslint no-undef: "error" -->
+
+```javascript
+var logEach = require( '@stdlib/console-log-each' );
+var ndarray2array = require( '@stdlib/ndarray-to-array' );
+var weibull = require( '@stdlib/random-weibull' );
+
+// Create a function for generating random arrays originating from the same state:
+var random = weibull.factory({
+    'state': weibull.state,
+    'copy': true
+});
+
+// Generate 3 one-dimensional arrays:
+var x1 = random( [ 5 ], 2.0, 5.0 );
+var x2 = random( [ 5 ], 2.0, 5.0 );
+var x3 = random( [ 5 ], 2.0, 5.0 );
+
+// Print the contents:
+logEach( '%f, %f, %f', ndarray2array( x1 ), ndarray2array( x2 ), ndarray2array( x3 ) );
+
+// Create another function for generating random arrays with the original state:
+random = weibull.factory({
+    'state': weibull.state,
+    'copy': true
+});
+
+// Generate a two-dimensional array which replicates the above pseudorandom number generation sequence:
+var x4 = random( [ 3, 5 ], 2.0, 5.0 );
+
+// Convert to a list of nested arrays:
+var arr = ndarray2array( x4 );
+
+// Print the contents:
+console.log( '' );
+logEach( '%f, %f, %f', arr[ 0 ], arr[ 1 ], arr[ 2 ] );
+```
+
+</section>
+
+<!-- /.examples -->
+
+<!-- Section for related `stdlib` packages. Do not manually edit this section, as it is automatically populated. -->
+
+<section class="related">
+
+</section>
+
+<!-- /.related -->
+
+<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+
+<section class="main-repo" >
+
+* * *
+
+## Notice
+
+This package is part of [stdlib][stdlib], a standard library for JavaScript and Node.js, with an emphasis on numerical and scientific computing. The library provides a collection of robust, high performance libraries for mathematics, statistics, streams, utilities, and more.
+
+For more information on the project, filing bug reports and feature requests, and guidance on how to develop [stdlib][stdlib], see the main project [repository][stdlib].
+
+#### Community
+
+[![Chat][chat-image]][chat-url]
+
+---
+
+## License
+
+See [LICENSE][stdlib-license].
+
+
+## Copyright
+
+Copyright &copy; 2016-2025. The Stdlib [Authors][stdlib-authors].
+
+</section>
+
+<!-- /.stdlib -->
+
+<!-- Section for all links. Make sure to keep an empty line after the `section` element and another before the `/section` close. -->
+
+<section class="links">
+
+[npm-image]: http://img.shields.io/npm/v/@stdlib/random-weibull.svg
+[npm-url]: https://npmjs.org/package/@stdlib/random-weibull
+
+[test-image]: https://github.com/stdlib-js/random-weibull/actions/workflows/test.yml/badge.svg?branch=main
+[test-url]: https://github.com/stdlib-js/random-weibull/actions/workflows/test.yml?query=branch:main
+
+[coverage-image]: https://img.shields.io/codecov/c/github/stdlib-js/random-weibull/main.svg
+[coverage-url]: https://codecov.io/github/stdlib-js/random-weibull?branch=main
+
+<!--
+
+[dependencies-image]: https://img.shields.io/david/stdlib-js/random-weibull.svg
+[dependencies-url]: https://david-dm.org/stdlib-js/random-weibull/main
+
+-->
+
+[chat-image]: https://img.shields.io/badge/zulip-join_chat-brightgreen.svg
+[chat-url]: https://stdlib.zulipchat.com
+
+[stdlib]: https://github.com/stdlib-js/stdlib
+
+[stdlib-authors]: https://github.com/stdlib-js/stdlib/graphs/contributors
+
+[umd]: https://github.com/umdjs/umd
+[es-module]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+
+[deno-url]: https://github.com/stdlib-js/random-weibull/tree/deno
+[deno-readme]: https://github.com/stdlib-js/random-weibull/blob/deno/README.md
+[umd-url]: https://github.com/stdlib-js/random-weibull/tree/umd
+[umd-readme]: https://github.com/stdlib-js/random-weibull/blob/umd/README.md
+[esm-url]: https://github.com/stdlib-js/random-weibull/tree/esm
+[esm-readme]: https://github.com/stdlib-js/random-weibull/blob/esm/README.md
+[branches-url]: https://github.com/stdlib-js/random-weibull/blob/main/branches.md
+
+[stdlib-license]: https://raw.githubusercontent.com/stdlib-js/random-weibull/main/LICENSE
+
+[@stdlib/random/base/weibull]: https://github.com/stdlib-js/random-base-weibull
+
+[@stdlib/array/uint32]: https://github.com/stdlib-js/array-uint32
+
+[@stdlib/ndarray/dtypes]: https://github.com/stdlib-js/ndarray-dtypes
+
+[@stdlib/ndarray/output-dtype-policies]: https://github.com/stdlib-js/ndarray-output-dtype-policies
+
+[@stdlib/ndarray/ctor]: https://github.com/stdlib-js/ndarray-ctor
+
+[@stdlib/ndarray/base/broadcast-shapes]: https://github.com/stdlib-js/ndarray-base-broadcast-shapes
+
+</section>
+
+<!-- /.links -->
